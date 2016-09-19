@@ -54,7 +54,7 @@ namespace omaha  {
 
 namespace {
 
-HRESULT HandleError(HRESULT hr);
+HRESULT HandleError(HRESULT hr, int line);
 
 // The function assumes that the extractor has already been opened.
 // The buffer must be deleted by the caller.
@@ -164,7 +164,7 @@ class MetaInstaller {
         if (!tag.get()) {
           _ASSERTE(!_T("Must provide arguments with untagged metainstaller."));
           HRESULT hr = GOOPDATE_E_UNTAGGED_METAINSTALLER;
-          HandleError(hr);
+          HandleError(hr, __LINE__);
           return hr;
         }
         command_line.AppendFormat(_T(" /%s %s /%s"),
@@ -457,7 +457,7 @@ CString GetUiTitle() {
   return title;
 }
 
-HRESULT HandleError(HRESULT result) {
+HRESULT HandleError(HRESULT result, int lineNum) {
   _ASSERTE(FAILED(result));
   CString msg_box_text;
 
@@ -486,12 +486,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpCmdLine, int) {
   scoped_co_init init_com_apt;
   HRESULT hr(init_com_apt.hresult());
   if (FAILED(hr)) {
-    return omaha::HandleError(hr);
+    return omaha::HandleError(hr, __LINE__);
   }
 
   hr = omaha::CheckOSRequirements();
   if (FAILED(hr)) {
-    return omaha::HandleError(hr);
+    return omaha::HandleError(hr, __LINE__);
   }
 
   omaha::MetaInstaller mi(hInstance, lpCmdLine);
